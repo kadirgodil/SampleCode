@@ -32,4 +32,8 @@ class TimesAdapter(val context: Context, val list: MutableList<DaysEntity>) :
         holder.tvStartTime?.text = daysEntity.startTime
         holder.tvEndTime?.text = daysEntity.endTime
     }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
 }

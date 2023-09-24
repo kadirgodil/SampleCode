@@ -46,4 +46,8 @@ class DetailsAdapter(
             holder.layoutParent?.visibility = View.GONE
         }
     }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
 }
