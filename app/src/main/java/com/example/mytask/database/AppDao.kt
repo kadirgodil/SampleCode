@@ -20,7 +20,7 @@ interface AppDao {
     @Query("select exists (select * from Mytask where dayId=:id)")
     fun isExists(id: Int): Boolean
 
-    @Query("Delete from Mytask where dayId=:id")
+    @Query("Delete from Mytask where id=:id")
     fun deleteDay(id: Int)
 
     @Query("Delete from Mytask")

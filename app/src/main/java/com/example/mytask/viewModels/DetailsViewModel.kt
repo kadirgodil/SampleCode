@@ -7,10 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailsViewModel() : ViewModel() {
-    @Inject
-    lateinit var appDao: AppDao
-
+class DetailsViewModel @Inject constructor(val appDao: AppDao) : ViewModel() {
     fun getDataByDayId(dayId: Int): MutableList<DaysEntity> {
         return appDao.getDataByDays(dayId)
     }

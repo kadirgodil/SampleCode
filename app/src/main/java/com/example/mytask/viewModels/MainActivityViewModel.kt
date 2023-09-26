@@ -9,16 +9,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class MainActivityViewModel() : ViewModel() {
+class MainActivityViewModel @Inject constructor(val appDao: AppDao) : ViewModel() {
 
     val startTime = MutableLiveData<String>()
     val endTime = MutableLiveData<String>()
 
     val startTimeClicked = SingleLiveEvent<Void>()
     val endTimeClicked = SingleLiveEvent<Void>()
-
-    @Inject
-    lateinit var appDao: AppDao
 
     val continueButtonClicked = SingleLiveEvent<Void>()
 

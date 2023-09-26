@@ -3,6 +3,7 @@ package com.example.mytask.di
 import android.content.Context
 import com.example.mytask.database.AppDao
 import com.example.mytask.database.AppDatabase
+import com.example.mytask.preferences.Preferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,5 +24,11 @@ class AppModule {
     @Singleton
     fun provideAppDao(appDatabase: AppDatabase): AppDao {
         return appDatabase.getAppDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providePreference(@ApplicationContext context: Context): Preferences {
+        return Preferences(context)
     }
 }

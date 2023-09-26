@@ -1,32 +1,30 @@
 package com.example.mytask.activities
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import com.example.mytask.R
 import com.example.mytask.adapters.DetailsAdapter
+import com.example.mytask.adapters.EditAdapter
 import com.example.mytask.databinding.ActivityDetailsBinding
+import com.example.mytask.databinding.ActivityEditBinding
 import com.example.mytask.litsners.ActionLitsner
+import com.example.mytask.litsners.onDayPosition
 import com.example.mytask.models.DaysEntity
 import com.example.mytask.models.DetailsModel
-import com.example.mytask.preferences.Preferences
 import com.example.mytask.viewModels.DetailsViewModel
+import com.example.mytask.viewModels.EditActivityViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-
 
 @AndroidEntryPoint
-class DetailsActivity : AppCompatActivity() {
-    private var binding: ActivityDetailsBinding? = null
-    private val mDetailsViewModel: DetailsViewModel by viewModels()
+class EditActivity : AppCompatActivity(), onDayPosition, ActionLitsner {
+    private var binding: ActivityEditBinding? = null
+    private val mEditViewModel: EditActivityViewModel by viewModels()
     private var mList: ArrayList<DetailsModel> = ArrayList()
-    private var mAdapter: DetailsAdapter? = null
+    private var mAdapter: EditAdapter? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupBinding()
@@ -36,20 +34,15 @@ class DetailsActivity : AppCompatActivity() {
     private fun initViews() {
         createDetailsList()
         setupAdapter()
-        binding?.tvEdit?.setOnClickListener {
-            startActivity(Intent(this, EditActivity::class.java))
-            finish()
-        }
     }
 
     private fun setupAdapter() {
-        mAdapter = DetailsAdapter(
-            this, mList, mDetailsViewModel
+        mAdapter = EditAdapter(
+            this, mList, this, this
         )
-        binding?.rvDaysList?.adapter = mAdapter
+        binding?.rvEdit?.adapter = mAdapter
         mAdapter?.notifyDataSetChanged()
         Handler(Looper.getMainLooper())?.postDelayed(
-
             Runnable { mAdapter?.removeUnusedList() },
             100
         )
@@ -67,8 +60,17 @@ class DetailsActivity : AppCompatActivity() {
     }
 
     private fun setupBinding() {
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_details)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_edit)
         binding?.lifecycleOwner = this
     }
 
+    override fun onDaySelected(position: Int): MutableList<DaysEntity> {
+        return mEditViewModel.getDatabyDays(position)
+    }
+
+    override fun onDayDeleted(dayId: Int) {
+        mEditViewModel.removeDayFromDb(dayId)
+        mAdapter?.removeUnusedList()
+        mAdapter?.notifyDataSetChanged()
+    }
 }

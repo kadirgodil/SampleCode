@@ -10,41 +10,43 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mytask.R
 import com.example.mytask.litsners.ActionLitsner
+import com.example.mytask.litsners.onDayPosition
 import com.example.mytask.models.DetailsModel
-import com.example.mytask.viewModels.DetailsViewModel
 
-class DetailsAdapter(
+class EditAdapter(
     val context: Context,
     val list: ArrayList<DetailsModel>,
-    val detailsModel: DetailsViewModel
-) : RecyclerView.Adapter<DetailsAdapter.Details>() {
+    val onDayPosition: onDayPosition,
+    val actionLitsner: ActionLitsner
+) : RecyclerView.Adapter<EditAdapter.Edit>() {
     val removeList = ArrayList<DetailsModel>()
 
     init {
         removeList.clear()
     }
 
-    class Details(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class Edit(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvDays: TextView? = itemView.findViewById(R.id.tvDaysDetail)
         val layoutParent: ConstraintLayout? = itemView.findViewById(R.id.layoutParent)
         val rvTime: RecyclerView? = itemView.findViewById(R.id.rvTimes)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Details {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Edit {
         val inflater = LayoutInflater.from(context).inflate(R.layout.item_details, parent, false)
-        return Details(inflater)
+        return EditAdapter.Edit(inflater)
     }
 
     override fun getItemCount(): Int {
         return list.size
+
     }
 
-    override fun onBindViewHolder(holder: Details, position: Int) {
+    override fun onBindViewHolder(holder: Edit, position: Int) {
         val detail = list[position]
         holder.tvDays?.text = detail.value.toString()
-        val locallist = detailsModel.getDataByDayId(detail.position)
+        val locallist = onDayPosition.onDaySelected(detail.position)
         if (locallist.size > 0) {
-            val timesAdapter = TimesAdapter(context, locallist)
+            val timesAdapter = EditTimesAdapter(context, locallist, actionLitsner)
             holder.rvTime?.adapter = timesAdapter
             timesAdapter.notifyDataSetChanged()
         } else {
@@ -53,6 +55,9 @@ class DetailsAdapter(
 
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
 
     fun removeUnusedList() {
         Log.d("Tag", "${removeList.size}")
@@ -62,7 +67,9 @@ class DetailsAdapter(
         notifyDataSetChanged()
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return position
+    fun removeItemAtPosition(index: Int) {
+        list.removeAt(index)
+        notifyDataSetChanged()
     }
+
 }
